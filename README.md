@@ -9,6 +9,8 @@ I'd like to thank the following for their awesome projects which served as inspi
 * [RasPiBrew](https://github.com/steve71/RasPiBrew)
 * [ArduinoPi Controller](http://www.fritz-hut.com/arduinopi-v1-5-bluetooth-dongle-support/) - [GitHub](https://github.com/JanStevens/ArduinoPi-Controller)
 * [DoctorMonk's blog](http://www.doctormonk.com/2012/04/raspberry-pi-and-arduino.html)
+* [FlotCharts](http://flotcharts.org/) - [GitHub](https://github.com/flot/flot)
+* [Bootstrap](http://twitter.github.com/bootstrap/index.html)
 
 ## Hardware
 

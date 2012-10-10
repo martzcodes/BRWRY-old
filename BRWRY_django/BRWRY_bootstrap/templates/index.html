@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>The BRWRY System:</h1>
+    <div class="well">
+		<p>Placeholder Graph:</p>
+        <div id="flot_chart" style="width: 100%; height: 300px;"></div>
+        <p>Time between updates: <input id="updateInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
+        <script type="text/javascript">
+			$(function () {
+				// we use an inline data source in the example, usually data would
+				// be fetched from a server
+				var data = [], totalPoints = 300;
+				function getRandomData() {
+					if (data.length > 0)
+						data = data.slice(1);
+			
+					// do a random walk
+					while (data.length < totalPoints) {
+						var prev = data.length > 0 ? data[data.length - 1] : 50;
+						var y = prev + Math.random() * 10 - 5;
+						if (y < 0)
+							y = 0;
+						if (y > 100)
+							y = 100;
+						data.push(y);
+					}
+			
+					// zip the generated y values with the x values
+					var res = [];
+					for (var i = 0; i < data.length; ++i)
+						res.push([i, data[i]])
+					return res;
+				}
+			
+				// setup control widget
+				var updateInterval = 30;
+				$("#updateInterval").val(updateInterval).change(function () {
+					var v = $(this).val();
+					if (v && !isNaN(+v)) {
+						updateInterval = +v;
+						if (updateInterval < 1)
+							updateInterval = 1;
+						if (updateInterval > 2000)
+							updateInterval = 2000;
+						$(this).val("" + updateInterval);
+					}
+				});
+			
+				// setup plot
+				var options = {
+					series: { shadowSize: 0 }, // drawing is faster without shadows
+					yaxis: { min: 0, max: 100 },
+					xaxis: { show: false }
+				};
+				var plot = $.plot($("#flot_chart"), [ getRandomData() ], options);
+			
+				function update() {
+					plot.setData([ getRandomData() ]);
+					// since the axes don't change, we don't need to call plot.setupGrid()
+					plot.draw();
+					
+					setTimeout(update, updateInterval);
+				}
+			
+				update();
+			});
+		</script>
+    </div>
+    <form class="form-horizontal">
+		<div class="row">
+			<div class="span6">
+				<h2>Element Control</h2>
+				
+				<h3>Boil Kettle</h3>
+				<div class="row">
+					<div class="span3">
+						<label class="radio inline">
+							<input type="radio" name="bkRadios" id="bkPID1" value="off" checked>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="bkRadios" id="bkPID2" value="on">On
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="bkRadios" id="bkPID3" value="pid">PID
+						</label>
+					</div>
+					<div class="span2">
+						<input type="text" name="bktarget" id="bktarget" class="span1" placeholder="0"><span class="help-inline">deg F</span>
+					</div>
+				</div>
+				<p><a class="btn btn-block" href="/">Calibrate &raquo;</a></p>
+	
+				<h3>RIMS</h3>
+				<div class="row">
+					<div class="span3">
+						<label class="radio inline">
+							<input type="radio" name="rimsRadios" id="bkPID1" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="rimsRadios" id="bkPID2" value="on" disabled>On
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="rimsRadios" id="bkPID3" value="pid" disabled>PID
+						</label>
+					</div>
+					<div class="span2">
+						<input type="text" name="rimstarget" id="rimstarget" placeholder="0" class="span1" disabled><span class="help-inline">deg F</span>
+					</div>
+				</div>
+				<p><a class="btn btn-block" href="/" disabled>Calibrate &raquo;</a></p>
+			</div>
+			<div class="span3">
+				<h2>Valve Controls</h2>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 1</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v1Radios" id="v1off" value="off" checked>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v1Radios" id="v1on" value="on">On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 2</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v2Radios" id="v2off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v2Radios" id="v2on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 3</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v3Radios" id="v3off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v3Radios" id="v3on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 4</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v4Radios" id="v4off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v4Radios" id="v4on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 5</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v5Radios" id="v5off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v5Radios" id="v5on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Valve 6</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="v6Radios" id="v6off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="v6Radios" id="v6on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="span3">
+				<h2>Pump Controls</h2>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Pump 1</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="p1Radios" id="p1off" value="off" checked>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="p1Radios" id="p1on" value="on">On
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span1">
+						<span class="help-inline">Pump 2</span>
+					</div>
+					<div class="span2">
+						<label class="radio inline">
+							<input type="radio" name="p2Radios" id="p2off" value="off" checked disabled>Off
+						</label>
+						<label class="radio inline">
+							<input type="radio" name="p2Radios" id="p2on" value="on" disabled>On
+						</label>
+					</div>
+				</div>
+	
+			</div>
+		</div>
+    	<div class="row">
+    		<div class="span12">
+    			<button type="submit" class="btn btn-large btn-block btn-primary">Submit Changes &raquo;</button>
+    		</div>
+    	</div>
+    </form>
+   	<div class="row">
+   		<div class="span12">
+   			<p><a class="btn btn-large btn-block" href="/configure">Configure Hardware &raquo;</a></p>
+   		</div>
+   	</div>
+    <div class="row">
+		<div class="span4">
+		<h2>Timeline Key</h2>
+		</div>
+		<div class="span8">
+		<h2>#BRWRY Feed</h2>
+		</div>
+	</div>
+
+{% endblock %}
