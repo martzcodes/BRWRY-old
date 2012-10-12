@@ -1,6 +1,47 @@
 from django import forms
 from django.contrib.auth.models import User
+from BRWRY_bootstrap.models import Hardware, PORT_CHOICES, Instruction, PID_CHOICES, ONOFF_CHOICES
 from bootstrap_toolkit.widgets import BootstrapDateInput
+
+class HardwareForm(forms.ModelForm):
+	temp_bk = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	temp_rims = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	temp_alt1 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	temp_alt2 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	temp_alt3 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	heat_bk = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	heat_rims = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	heat_alt1 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve1 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve2 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve3 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve4 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve5 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	valve6 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	pump1 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	pump2 = forms.CharField(max_length=3,widget=forms.Select(choices=PORT_CHOICES),required=False)
+	
+	class Meta:
+		model = Hardware
+
+class InstructionForm(forms.ModelForm):
+	bkRadios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=PID_CHOICES),required=False)
+	bktarget = forms.CharField(max_length=3,required=False)
+	rimsRadios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=PID_CHOICES),required=False)
+	rimstarget = forms.CharField(max_length=3,required=False)
+	altRadios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=PID_CHOICES),required=False)
+	alttarget = forms.CharField(max_length=3,required=False)
+	v1Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	v2Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	v3Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	v4Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	v5Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	v6Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	p1Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	p2Radios = forms.CharField(max_length=3,widget=forms.RadioSelect(choices=ONOFF_CHOICES),required=False)
+	
+	class Meta:
+		model = Instruction
 
 class BRWRYForm(forms.Form):
     date = forms.DateField(
@@ -66,9 +107,10 @@ class BRWRYTest(forms.Form):
             'inline': True,
         }),
         choices=(
-            ("t1", "Temperature 1"),
-            ("t2", "Temperature 2"),
-            ("t3", "Temperature 3"),
+            ("t1", "Boil Kettle Temp Sensor"),
+            ("t2", "RIMS Temp Sensor"),
+            ("t3", "Alt Temp Sensor 1"),
+            ("t4", "Alt Temp Sensor 2"),
         ),
     )
 
@@ -77,9 +119,10 @@ class BRWRYTest(forms.Form):
             'inline': True,
         }),
         choices=(
-            ("h1", "Element 1"),
+            ("h1", "Boil Kettle Element"),
             ("rims", "RIMS"),
         ),
+        required=False,
     )
 
     valves = forms.MultipleChoiceField(
@@ -94,6 +137,7 @@ class BRWRYTest(forms.Form):
             ("v5", "Valve 5"),
             ("v6", "Valve 6"),
         ),
+        required=False,
     )
 
     pumps = forms.MultipleChoiceField(
@@ -104,6 +148,7 @@ class BRWRYTest(forms.Form):
             ("p1", "Pump 1"),
             ("p2", "Pump 2"),
         ),
+        required=False,
     )
 
     def clean(self):

@@ -16,7 +16,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 
-    (r'^$', direct_to_template, {'template': 'index.html'}, "home"),
+#    (r'^$', direct_to_template, {'template': 'index.html'}, "home"),
+    (r'^$', 'BRWRY_bootstrap.views.BRWRY_index', {}, "home"),
     (r'^about$', direct_to_template, {'template': 'about.html'}, "about"),
     (r'^contact$', direct_to_template, {'template': 'contact.html'}, "contact"),
     (r'^form$', 'BRWRY_bootstrap.views.BRWRY_form'),

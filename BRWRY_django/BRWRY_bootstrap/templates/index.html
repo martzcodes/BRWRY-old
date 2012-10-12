@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load bootstrap_toolkit %}
+
 {% block content %}
 
     <h1>The BRWRY System:</h1>
@@ -68,7 +70,9 @@
 			});
 		</script>
     </div>
-    <form class="form-horizontal">
+    <form class="form-horizontal" method="POST">
+    	{% csrf_token %}
+    	
 		<div class="row">
 			<div class="span6">
 				<h2>Element Control</h2>
@@ -76,41 +80,58 @@
 				<h3>Boil Kettle</h3>
 				<div class="row">
 					<div class="span3">
-						<label class="radio inline">
-							<input type="radio" name="bkRadios" id="bkPID1" value="off" checked>Off
+						<label class="radio inline" for="id_bkRadios_0">
+							<input type="radio" name="bkRadios" id="id_bkRadios_0" value="OFF"{% if instructions.bkRadios == 'OFF'%} checked {% endif %} {% if hardware.heat_bk == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="bkRadios" id="bkPID2" value="on">On
+						<label class="radio inline" for="id_bkRadios_1">
+							<input type="radio" name="bkRadios" id="id_bkRadios_1" value="ON"{% if instructions.bkRadios == 'ON'%} checked {% endif %} {% if hardware.heat_bk == 'NC'%} disabled {% endif %}>On
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="bkRadios" id="bkPID3" value="pid">PID
+						<label class="radio inline" for="id_bkRadios_2">
+							<input type="radio" name="bkRadios" id="id_bkRadios_1" value="PID"{% if instructions.bkRadios == 'PID'%} checked {% endif %} {% if hardware.heat_bk == 'NC'%} disabled {% endif %}>PID
 						</label>
 					</div>
 					<div class="span2">
-						<input type="text" name="bktarget" id="bktarget" class="span1" placeholder="0"><span class="help-inline">deg F</span>
+						<input type="text" name="bktarget" id="id_bktarget" class="span1" value="{{ instructions.bktarget}}"{% if hardware.heat_bk == 'NC'%} disabled {% endif %}><span class="help-inline">deg F</span>
 					</div>
 				</div>
-				<p><a class="btn btn-block" href="/">Calibrate &raquo;</a></p>
 	
 				<h3>RIMS</h3>
 				<div class="row">
 					<div class="span3">
-						<label class="radio inline">
-							<input type="radio" name="rimsRadios" id="bkPID1" value="off" checked disabled>Off
+						<label class="radio inline" for="id_rimsRadios_0">
+							<input type="radio" name="rimsRadios" id="id_rimsRadios_0" value="OFF"{% if instructions.rimsRadios == 'OFF'%} checked {% endif %} {% if hardware.heat_rims == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="rimsRadios" id="bkPID2" value="on" disabled>On
+						<label class="radio inline" for="id_rimsRadios_1">
+							<input type="radio" name="rimsRadios" id="id_rimsRadios_1" value="ON"{% if instructions.rimsRadios == 'ON'%} checked {% endif %} {% if hardware.heat_rims == 'NC'%} disabled {% endif %}>On
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="rimsRadios" id="bkPID3" value="pid" disabled>PID
+						<label class="radio inline" for="id_rimsRadios_2">
+							<input type="radio" name="rimsRadios" id="id_rimsRadios_2" value="PID"{% if instructions.rimsRadios == 'PID'%} checked {% endif %} {% if hardware.heat_rims == 'NC'%} disabled {% endif %}>PID
 						</label>
 					</div>
 					<div class="span2">
-						<input type="text" name="rimstarget" id="rimstarget" placeholder="0" class="span1" disabled><span class="help-inline">deg F</span>
+						<input type="text" name="rimstarget" id="id_rimstarget" class="span1" value="{{ instructions.rimstarget}}"{% if hardware.heat_rims == 'NC'%} disabled {% endif %}><span class="help-inline">deg F</span>
 					</div>
 				</div>
-				<p><a class="btn btn-block" href="/" disabled>Calibrate &raquo;</a></p>
+
+				<h3>Other</h3>
+				<div class="row">
+					<div class="span3">
+						<label class="radio inline" for="id_altRadios_0">
+							<input type="radio" name="altRadios" id="id_altRadios_0" value="OFF"{% if instructions.altRadios == 'OFF'%} checked {% endif %} {% if hardware.heat_alt1 == 'NC'%} disabled {% endif %}>Off
+						</label>
+						<label class="radio inline" for="id_altRadios_1">
+							<input type="radio" name="altRadios" id="id_altRadios_1" value="ON"{% if instructions.altRadios == 'ON'%} checked {% endif %} {% if hardware.heat_alt1 == 'NC'%} disabled {% endif %}>On
+						</label>
+						<label class="radio inline" for="id_altRadios_2">
+							<input type="radio" name="altRadios" id="id_altRadios_2" value="PID"{% if instructions.altRadios == 'PID'%} checked {% endif %} {% if hardware.heat_alt1 == 'NC'%} disabled {% endif %}>PID
+						</label>
+					</div>
+					<div class="span2">
+						<input type="text" name="alttarget" id="id_alttarget" class="span1" value="{{ instructions.alttarget}}"{% if hardware.heat_alt1 == 'NC'%} disabled {% endif %}><span class="help-inline">deg F</span>
+					</div>
+				</div>
 			</div>
+			
 			<div class="span3">
 				<h2>Valve Controls</h2>
 				<div class="row">
@@ -118,11 +139,11 @@
 						<span class="help-inline">Valve 1</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v1Radios" id="v1off" value="off" checked>Off
+						<label class="radio inline" for="id_v1Radios_0">
+							<input type="radio" name="v1Radios" id="id_v1Radios_0" value="OFF"{% if instructions.v1Radios == 'OFF'%} checked {% endif %} {% if hardware.valve1 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v1Radios" id="v1on" value="on">On
+						<label class="radio inline" for="id_v1Radios_1">
+							<input type="radio" name="v1Radios" id="id_v1Radios_1" value="ON"{% if instructions.v1Radios == 'ON'%} checked {% endif %} {% if hardware.valve1 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -131,11 +152,11 @@
 						<span class="help-inline">Valve 2</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v2Radios" id="v2off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_v2Radios_0">
+							<input type="radio" name="v2Radios" id="id_v2Radios_0" value="OFF"{% if instructions.v2Radios == 'OFF'%} checked {% endif %} {% if hardware.valve2 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v2Radios" id="v2on" value="on" disabled>On
+						<label class="radio inline" for="id_v2Radios_1">
+							<input type="radio" name="v2Radios" id="id_v2Radios_1" value="ON"{% if instructions.v2Radios == 'ON'%} checked {% endif %} {% if hardware.valve2 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -144,11 +165,11 @@
 						<span class="help-inline">Valve 3</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v3Radios" id="v3off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_v3Radios_0">
+							<input type="radio" name="v3Radios" id="id_v3Radios_0" value="OFF"{% if instructions.v3Radios == 'OFF'%} checked {% endif %} {% if hardware.valve3 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v3Radios" id="v3on" value="on" disabled>On
+						<label class="radio inline" for="id_v3Radios_1">
+							<input type="radio" name="v3Radios" id="id_v3Radios_1" value="ON"{% if instructions.v3Radios == 'ON'%} checked {% endif %} {% if hardware.valve3 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -157,11 +178,11 @@
 						<span class="help-inline">Valve 4</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v4Radios" id="v4off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_v4Radios_0">
+							<input type="radio" name="v4Radios" id="id_v4Radios_0" value="OFF"{% if instructions.v4Radios == 'OFF'%} checked {% endif %} {% if hardware.valve4 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v4Radios" id="v4on" value="on" disabled>On
+						<label class="radio inline" for="id_v4Radios_1">
+							<input type="radio" name="v4Radios" id="id_v4Radios_1" value="ON"{% if instructions.v4Radios == 'ON'%} checked {% endif %} {% if hardware.valve4 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -170,11 +191,11 @@
 						<span class="help-inline">Valve 5</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v5Radios" id="v5off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_v5Radios_0">
+							<input type="radio" name="v5Radios" id="id_v5Radios_0" value="OFF"{% if instructions.v5Radios == 'OFF'%} checked {% endif %} {% if hardware.valve5 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v5Radios" id="v5on" value="on" disabled>On
+						<label class="radio inline" for="id_v5Radios_1">
+							<input type="radio" name="v5Radios" id="id_v5Radios_1" value="ON"{% if instructions.v5Radios == 'ON'%} checked {% endif %} {% if hardware.valve5 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -183,11 +204,11 @@
 						<span class="help-inline">Valve 6</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="v6Radios" id="v6off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_v6Radios_0">
+							<input type="radio" name="v6Radios" id="id_v6Radios_0" value="OFF"{% if instructions.v6Radios == 'OFF'%} checked {% endif %} {% if hardware.valve6 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="v6Radios" id="v6on" value="on" disabled>On
+						<label class="radio inline" for="id_v6Radios_1">
+							<input type="radio" name="v6Radios" id="id_v6Radios_1" value="ON"{% if instructions.v6Radios == 'ON'%} checked {% endif %} {% if hardware.valve6 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -199,11 +220,11 @@
 						<span class="help-inline">Pump 1</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="p1Radios" id="p1off" value="off" checked>Off
+						<label class="radio inline" for="id_p1Radios_0">
+							<input type="radio" name="p1Radios" id="id_p1Radios_0" value="OFF"{% if instructions.p1Radios == 'OFF'%} checked {% endif %} {% if hardware.pump1 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="p1Radios" id="p1on" value="on">On
+						<label class="radio inline" for="id_p1Radios_1">
+							<input type="radio" name="p1Radios" id="id_p1Radios_1" value="ON"{% if instructions.p1Radios == 'ON'%} checked {% endif %} {% if hardware.pump1 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
@@ -212,28 +233,24 @@
 						<span class="help-inline">Pump 2</span>
 					</div>
 					<div class="span2">
-						<label class="radio inline">
-							<input type="radio" name="p2Radios" id="p2off" value="off" checked disabled>Off
+						<label class="radio inline" for="id_p2Radios_0">
+							<input type="radio" name="p2Radios" id="id_p2Radios_0" value="OFF"{% if instructions.p2Radios == 'OFF'%} checked {% endif %} {% if hardware.pump2 == 'NC'%} disabled {% endif %}>Off
 						</label>
-						<label class="radio inline">
-							<input type="radio" name="p2Radios" id="p2on" value="on" disabled>On
+						<label class="radio inline" for="id_p2Radios_1">
+							<input type="radio" name="p2Radios" id="id_p2Radios_1" value="ON"{% if instructions.p2Radios == 'ON'%} checked {% endif %} {% if hardware.pump2 == 'NC'%} disabled {% endif %}>On
 						</label>
 					</div>
 				</div>
 	
 			</div>
 		</div>
+	    <p>&nbsp;</p>
     	<div class="row">
     		<div class="span12">
-    			<button type="submit" class="btn btn-large btn-block btn-primary">Submit Changes &raquo;</button>
+				<input type="submit" class="btn btn-large btn-block btn-primary" value="Submit Changes &raquo;">
     		</div>
     	</div>
     </form>
-   	<div class="row">
-   		<div class="span12">
-   			<p><a class="btn btn-large btn-block" href="/configure">Configure Hardware &raquo;</a></p>
-   		</div>
-   	</div>
     <div class="row">
 		<div class="span4">
 		<h2>Timeline Key</h2>

@@ -14,47 +14,11 @@
         {% csrf_token %}
 
         {% for field in form %}
-            {% if field.name == 'disabled' %}
-                {% include "bootstrap_toolkit/field.html" with append='$' %}
-            {% else %}
-                {% if field.name != 'color' %}
-                    {% include "bootstrap_toolkit/field.html" %}
-                {% endif %}
-            {% endif %}
+            {% include "bootstrap_toolkit/field.html" %}
         {% endfor %}
 
-        {{ form.color|as_bootstrap:layout }}
-
-        {% if layout == "horizontal" %}
-            <p class="form-actions">
-                <input type="submit" value="Submit" class="btn btn-primary">
-            </p>
-        {% else %}
-            <input type="submit" value="Submit" class="btn btn-primary">
-        {% endif %}
-
-        <p>Sensors: 
-        {% for sensor in sensors %}
-            {{ sensor }}, 
-        {% endfor %}
-        </p>
-        <p>Elements: 
-        {% for element in elements %}
-            {{ element }}, 
-        {% endfor %}
-        </p>
-        <p>Valves: 
-        {% for valve in valves %}
-            {{ valve }}, 
-        {% endfor %}
-        </p>
-        <p>Pumps: 
-        {% for pump in pumps %}
-            {{ pump }}, 
-        {% endfor %}
-        </p>
+		<p class="form-actions">
+			<input type="submit" value="Submit" class="btn btn-primary">
+		</p>
     </form>
-
-    <p>Submit the form to see error messages styled into it.</p>
-
 {% endblock %}
