@@ -9,16 +9,415 @@
     <p>...what equipment do you have?</p>
     
     <p>&nbsp;</p>
-        
+    
     <form class="form-horizontal" action="" method="post">
         {% csrf_token %}
 
-        {% for field in form %}
-            {% include "bootstrap_toolkit/field.html" %}
-        {% endfor %}
+		<div class="row">
+			<div class="span3">
+				<h2>Temp Sensors</h2>
+				<label for="id_temp_bk">Boil Kettle</label>
+				<select name="temp_bk" id="id_temp_bk">
+					<option value="NC"{% if hardware.temp_bk == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.temp_bk == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.temp_bk == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.temp_bk == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.temp_bk == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.temp_bk == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.temp_bk == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.temp_bk == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.temp_bk == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.temp_bk == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.temp_bk == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.temp_bk == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.temp_bk == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.temp_bk == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.temp_bk == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.temp_bk == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.temp_bk == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.temp_bk == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.temp_bk == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.temp_bk == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.temp_bk == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_temp_rims">RIMS</label>
+				<select name="temp_rims" id="id_temp_rims">
+					<option value="NC"{% if hardware.temp_rims == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.temp_rims == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.temp_rims == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.temp_rims == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.temp_rims == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.temp_rims == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.temp_rims == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.temp_rims == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.temp_rims == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.temp_rims == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.temp_rims == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.temp_rims == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.temp_rims == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.temp_rims == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.temp_rims == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.temp_rims == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.temp_rims == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.temp_rims == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.temp_rims == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.temp_rims == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.temp_rims == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_temp_alt1">Alt 1</label>
+				<select name="temp_alt1" id="id_temp_alt1">
+					<option value="NC"{% if hardware.temp_alt1 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.temp_alt1 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.temp_alt1 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.temp_alt1 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.temp_alt1 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.temp_alt1 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.temp_alt1 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.temp_alt1 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.temp_alt1 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.temp_alt1 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.temp_alt1 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.temp_alt1 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.temp_alt1 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.temp_alt1 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.temp_alt1 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.temp_alt1 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.temp_alt1 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.temp_alt1 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.temp_alt1 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.temp_alt1 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.temp_alt1 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_temp_alt2">Alt 2</label>
+				<select name="temp_alt2" id="id_temp_alt2">
+					<option value="NC"{% if hardware.temp_alt2 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.temp_alt2 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.temp_alt2 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.temp_alt2 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.temp_alt2 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.temp_alt2 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.temp_alt2 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.temp_alt2 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.temp_alt2 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.temp_alt2 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.temp_alt2 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.temp_alt2 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.temp_alt2 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.temp_alt2 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.temp_alt2 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.temp_alt2 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.temp_alt2 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.temp_alt2 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.temp_alt2 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.temp_alt2 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.temp_alt2 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_temp_alt3">Alt 3</label>
+				<select name="temp_alt3" id="id_temp_alt3">
+					<option value="NC"{% if hardware.temp_alt3 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.temp_alt3 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.temp_alt3 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.temp_alt3 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.temp_alt3 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.temp_alt3 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.temp_alt3 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.temp_alt3 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.temp_alt3 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.temp_alt3 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.temp_alt3 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.temp_alt3 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.temp_alt3 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.temp_alt3 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.temp_alt3 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.temp_alt3 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.temp_alt3 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.temp_alt3 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.temp_alt3 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.temp_alt3 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.temp_alt3 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+			</div>
+			<div class="span3">
+				<h2>Heating Elements</h2>
+				<label for="id_heat_bk">Boil Kettle</label>
+				<select name="heat_bk" id="id_heat_bk">
+					<option value="NC"{% if hardware.heat_bk == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.heat_bk == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.heat_bk == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.heat_bk == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.heat_bk == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.heat_bk == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.heat_bk == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.heat_bk == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.heat_bk == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.heat_bk == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.heat_bk == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.heat_bk == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.heat_bk == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.heat_bk == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.heat_bk == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.heat_bk == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.heat_bk == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.heat_bk == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.heat_bk == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.heat_bk == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.heat_bk == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_heat_rims">RIMS Element</label>
+				<select name="heat_rims" id="id_heat_rims">
+					<option value="NC"{% if hardware.heat_rims == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.heat_rims == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.heat_rims == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.heat_rims == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.heat_rims == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.heat_rims == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.heat_rims == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.heat_rims == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.heat_rims == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.heat_rims == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.heat_rims == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.heat_rims == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.heat_rims == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.heat_rims == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.heat_rims == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.heat_rims == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.heat_rims == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.heat_rims == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.heat_rims == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.heat_rims == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.heat_rims == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_heat_alt1">Other Element</label>
+				<select name="heat_alt1" id="id_heat_alt1">
+					<option value="NC"{% if hardware.heat_alt1 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.heat_alt1 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.heat_alt1 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.heat_alt1 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.heat_alt1 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.heat_alt1 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.heat_alt1 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.heat_alt1 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.heat_alt1 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.heat_alt1 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.heat_alt1 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.heat_alt1 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.heat_alt1 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.heat_alt1 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.heat_alt1 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.heat_alt1 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.heat_alt1 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.heat_alt1 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.heat_alt1 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.heat_alt1 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.heat_alt1 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+			</div>
+			<div class="span3">
+				<h2>Valves</h2>
+				<label for="id_valve1">Valve 1</label>
+				<select name="valve1" id="id_valve1">
+					<option value="NC"{% if hardware.valve1 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve1 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve1 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve1 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve1 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve1 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve1 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve1 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve1 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve1 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve1 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve1 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve1 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve1 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve1 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve1 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve1 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve1 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve1 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve1 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve1 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_valve2">Valve 2</label>
+				<select name="valve2" id="id_valve2">
+					<option value="NC"{% if hardware.valve2 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve2 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve2 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve2 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve2 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve2 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve2 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve2 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve2 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve2 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve2 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve2 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve2 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve2 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve2 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve2 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve2 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve2 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve2 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve2 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve2 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_valve3">Valve 3</label>
+				<select name="valve3" id="id_valve3">
+					<option value="NC"{% if hardware.valve3 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve3 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve3 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve3 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve3 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve3 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve3 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve3 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve3 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve3 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve3 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve3 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve3 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve3 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve3 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve3 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve3 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve3 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve3 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve3 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve3 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_valve4">Valve 4</label>
+				<select name="valve4" id="id_valve4">
+					<option value="NC"{% if hardware.valve4 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve4 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve4 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve4 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve4 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve4 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve4 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve4 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve4 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve4 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve4 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve4 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve4 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve4 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve4 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve4 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve4 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve4 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve4 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve4 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve4 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_valve5">Valve 5</label>
+				<select name="valve5" id="id_valve5">
+					<option value="NC"{% if hardware.valve5 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve5 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve5 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve5 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve5 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve5 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve5 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve5 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve5 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve5 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve5 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve5 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve5 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve5 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve5 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve5 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve5 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve5 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve5 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve5 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve5 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_valve6">Valve 6</label>
+				<select name="valve6" id="id_valve6">
+					<option value="NC"{% if hardware.valve6 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.valve6 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.valve6 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.valve6 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.valve6 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.valve6 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.valve6 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.valve6 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.valve6 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.valve6 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.valve6 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.valve6 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.valve6 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.valve6 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.valve6 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.valve6 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.valve6 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.valve6 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.valve6 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.valve6 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.valve6 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+			</div>
+			<div class="span3">
+				<h2>Pumps</h2>
+				<label for="id_pump1">Pump 1</label>
+				<select name="pump1" id="id_pump1">
+					<option value="NC"{% if hardware.pump1 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.pump1 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.pump1 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.pump1 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.pump1 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.pump1 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.pump1 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.pump1 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.pump1 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.pump1 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.pump1 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.pump1 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.pump1 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.pump1 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.pump1 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.pump1 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.pump1 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.pump1 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.pump1 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.pump1 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.pump1 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+				<label for="id_pump2">Pump 2</label>
+				<select name="pump2" id="id_pump2">
+					<option value="NC"{% if hardware.pump2 == 'NC'%} selected="selected"{% endif %}>Not Configured</option>
+					<option value="A0"{% if hardware.pump2 == 'A0'%} selected="selected"{% endif %}>Analog 0</option>
+					<option value="A1"{% if hardware.pump2 == 'A1'%} selected="selected"{% endif %}>Analog 1</option>
+					<option value="A2"{% if hardware.pump2 == 'A2'%} selected="selected"{% endif %}>Analog 2</option>
+					<option value="A3"{% if hardware.pump2 == 'A3'%} selected="selected"{% endif %}>Analog 3</option>
+					<option value="A4"{% if hardware.pump2 == 'A4'%} selected="selected"{% endif %}>Analog 4</option>
+					<option value="A5"{% if hardware.pump2 == 'A5'%} selected="selected"{% endif %}>Analog 5</option>
+					<option value="D0"{% if hardware.pump2 == 'D0'%} selected="selected"{% endif %}>Digital 0</option>
+					<option value="D1"{% if hardware.pump2 == 'D1'%} selected="selected"{% endif %}>Digital 1</option>
+					<option value="D2"{% if hardware.pump2 == 'D2'%} selected="selected"{% endif %}>Digital 2</option>
+					<option value="D3"{% if hardware.pump2 == 'D3'%} selected="selected"{% endif %}>Digital 3 PWM</option>
+					<option value="D4"{% if hardware.pump2 == 'D4'%} selected="selected"{% endif %}>Digital 4</option>
+					<option value="D5"{% if hardware.pump2 == 'D5'%} selected="selected"{% endif %}>Digital 5 PWM</option>
+					<option value="D6"{% if hardware.pump2 == 'D6'%} selected="selected"{% endif %}>Digital 6 PWM</option>
+					<option value="D7"{% if hardware.pump2 == 'D7'%} selected="selected"{% endif %}>Digital 7</option>
+					<option value="D8"{% if hardware.pump2 == 'D8'%} selected="selected"{% endif %}>Digital 8</option>
+					<option value="D9"{% if hardware.pump2 == 'D9'%} selected="selected"{% endif %}>Digital 9 PWM</option>
+					<option value="D10"{% if hardware.pump2 == 'D10'%} selected="selected"{% endif %}>Digital 10 PWM</option>
+					<option value="D11"{% if hardware.pump2 == 'D11'%} selected="selected"{% endif %}>Digital 11 PWM</option>
+					<option value="D12"{% if hardware.pump2 == 'D12'%} selected="selected"{% endif %}>Digital 12</option>
+					<option value="D13"{% if hardware.pump2 == 'D13'%} selected="selected"{% endif %}>Digital 13</option>
+				</select>
+			</div>
+		</div>
 
-		<p class="form-actions">
-			<input type="submit" value="Submit" class="btn btn-primary">
-		</p>
+	    <p>&nbsp;</p>
+    	<div class="row">
+    		<div class="span12">
+				<input type="submit" class="btn btn-large btn-block btn-primary" value="Submit Changes &raquo;">
+    		</div>
+    	</div>
     </form>
+    
 {% endblock %}

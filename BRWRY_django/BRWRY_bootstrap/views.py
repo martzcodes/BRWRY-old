@@ -3,6 +3,7 @@ from django.template.context import RequestContext
 from BRWRY_bootstrap.forms import BRWRYForm, BRWRYTest, HardwareForm, InstructionForm
 from BRWRY_bootstrap.models import Hardware, Instruction
 from BRWRY_django.BRWRY_bootstrap.forms import BRWRYModelForm, BRWRYInlineForm, WidgetsForm
+from BRWRY_django.BRWRY_bootstrap.updateInstruction import updateInstruction
 
 def BRWRY_configure(request):
     hardware = Hardware.objects.get(pk=1)
@@ -17,6 +18,7 @@ def BRWRY_configure(request):
         form = HardwareForm(instance=hardware)
     return render_to_response('configure.html', RequestContext(request, {
         'form': form,
+        'hardware': hardware,
     }))
 
 def BRWRY_index(request):
@@ -27,7 +29,8 @@ def BRWRY_index(request):
         form = InstructionForm(request.POST,instance=instructions)
         if form.is_valid():
             form.save()
-            print "saved index"
+            post = request.POST.copy()
+            updateInstruction(post)
     else:
         form = InstructionForm()
         form = InstructionForm(instance=instructions)

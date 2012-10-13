@@ -124,7 +124,7 @@ void loop () {
 void establishContact() {
   while (Serial.available() <= 0) {
     Serial.println("Hello?");
-    delay(300);
+    delay(1000);
   }
 };
 
