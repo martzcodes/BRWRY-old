@@ -4,6 +4,7 @@ from BRWRY_bootstrap.forms import BRWRYForm, BRWRYTest, HardwareForm, Instructio
 from BRWRY_bootstrap.models import Hardware, Instruction
 from BRWRY_django.BRWRY_bootstrap.forms import BRWRYModelForm, BRWRYInlineForm, WidgetsForm
 from BRWRY_django.BRWRY_bootstrap.updateInstruction import updateInstruction
+import BRWRY_django.BRWRY_bootstrap.brwry
 
 def BRWRY_configure(request):
     hardware = Hardware.objects.get(pk=1)

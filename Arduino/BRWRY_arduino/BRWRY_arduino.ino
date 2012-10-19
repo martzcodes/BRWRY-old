@@ -23,45 +23,66 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// Data wire is plugged into pin 2 on the Arduino
+#define ONE_WIRE_BUS 2
+
 int receiveCount = 0;
 int stepCount = 0;
 int bm = 0; //BK PID Mode
 int bt = 0;//BK Target Temp
 int rm = 0; //RIMS PID Mode
 int rt = 0; //RIMS Target Temp
-int b1 = 0; //BK Heating Element 1 Status
-int b2 = 0; //BK Heating Element 2 Status
-int he = 0; //RIMS Heating Element Status
-int p1 = 0; //Pump Status
+int am = 0; //BK Heating Element 1 Status
+int at = 0; //BK Heating Element 2 Status
 int v1 = 0; //Valve 1 Status
 int v2 = 0; //Valve 2 Status
 int v3 = 0; //Valve 3 Status
 int v4 = 0; //Valve 4 Status
 int v5 = 0; //Valve 5 Status
 int v6 = 0; //Valve 6 Status
-int t1 = 0; //Temp Sensor 1
-int t2 = 0; //Temp Sensor 2
-int t3 = 0; //Temp Sensor 3
+int p1 = 0; //Pump Status
+int p2 = 0; //RIMS Heating Element Status
+float t1 = 0.0; //Temp Sensor 1
+float t2 = 0.0; //Temp Sensor 2
+float t3 = 0.0; //Temp Sensor 3
+float t4 = 0.0; //Temp Sensor 4
+float t5 = 0.0; //Temp Sensor 5
+int rpistep = 0;
 int rpibm = 0; //BK PID Mode
 int rpibt = 0;//BK Target Temp
 int rpirm = 0; //RIMS PID Mode
 int rpirt = 0; //RIMS Target Temp
-int rpib1 = 0; //BK Heating Element 1 Instruction
-int rpib2 = 0; //BK Heating Element 2 Instruction
-int rpihe = 0; //RIMS Heating Element Instruction
-int rpip1 = 0; //Pump Instruction
+int rpiam = 0; //BK Heating Element 1 Instruction
+int rpiat = 0; //BK Heating Element 2 Instruction
 int rpiv1 = 0; //Valve 1 Instruction
 int rpiv2 = 0; //Valve 2 Instruction
 int rpiv3 = 0; //Valve 3 Instruction
 int rpiv4 = 0; //Valve 4 Instruction
 int rpiv5 = 0; //Valve 5 Instruction
 int rpiv6 = 0; //Valve 6 Instruction
+int rpip1 = 0; //Pump Instruction
+int rpip2 = 0; //Pump Instruction
+boolean checkTemp = true;
+
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Pass our oneWire reference to Dallas Temperature. 
+DallasTemperature sensors(&oneWire);
+
+DeviceAddress t1add = { 0x28, 0x7C, 0x5B, 0xCB, 0x03, 0x00, 0x00, 0x57 };
 
 void setup () {
 
   Serial.begin(9600);
   establishContact();
-
+  
+  sensors.begin(); // IC Default 9 bit. If you have troubles consider upping it 12. Ups the delay giving the IC more time to process the temperature measurement
+  
+  sensors.setResolution(t1add, 10);
 };
 
 void loop () {
@@ -72,52 +93,62 @@ void loop () {
   
   while (Serial.available() > 0) {
     
+    checkTemp = false;
+    
     switch (receiveCount) {
       case 0:
-      rpibm = Serial.parseInt(); //BK PID Mode
+      rpistep = Serial.parseInt();
       break;
       case 1:
-      rpibt = Serial.parseInt();//BK Target Temp
+      rpibm = Serial.parseInt(); //BK PID Mode
       break;
       case 2:
-      rpirm = Serial.parseInt(); //RIMS PID Mode
+      rpibt = Serial.parseInt();//BK Target Temp
       break;
       case 3:
-      rpirt = Serial.parseInt(); //RIMS Target Temp
+      rpirm = Serial.parseInt(); //RIMS PID Mode
       break;
       case 4:
-      rpib1 = Serial.parseInt(); //BK Heating Element 1 Instruction
+      rpirt = Serial.parseInt(); //RIMS Target Temp
       break;
       case 5:
-      rpib2 = Serial.parseInt(); //BK Heating Element 2 Instruction
+      rpiam = Serial.parseInt(); //Alt Element Mode Instruction
       break;
       case 6:
-      rpihe = Serial.parseInt(); //RIMS Heating Element Instruction
+      rpiat = Serial.parseInt(); //Alt Element Target Temp Instruction
       break;
       case 7:
-      rpip1 = Serial.parseInt(); //Pump Instruction
-      break;
-      case 8:
       rpiv1 = Serial.parseInt(); //Valve 1 Instruction
       break;
-      case 9:
+      case 8:
       rpiv2 = Serial.parseInt(); //Valve 2 Instruction
       break;
-      case 10:
+      case 9:
       rpiv3 = Serial.parseInt(); //Valve 3 Instruction
       break;
-      case 11:
+      case 10:
       rpiv4 = Serial.parseInt(); //Valve 4 Instruction
       break;
-      case 12:
+      case 11:
       rpiv5 = Serial.parseInt(); //Valve 5 Instruction
       break;
-      case 13:
+      case 12:
       rpiv6 = Serial.parseInt(); //Valve 6 Instruction
+      break;
+      case 13:
+      rpip1 = Serial.parseInt(); //Pump Instruction
+      break;
+      case 14:
+      rpip2 = Serial.parseInt(); //Pump Instruction
       break;
     }
     
     receiveCount = receiveCount + 1;
+  }
+ 
+  if (checkTemp) {
+      sensors.requestTemperatures(); // Send the command to get temperatures
+      t1 = sensors.getTempF(t1add);
   }
 };
 
@@ -129,51 +160,58 @@ void establishContact() {
 };
 
 void sendData() {
+  Serial.print("step,");
   Serial.print(stepCount); //Step
-  Serial.print(",");
+/*  Serial.print(";bkRadios,");
   Serial.print(bm);  //BK PID Mode
-  Serial.print(",");
+  Serial.print(";bktarget,");
   Serial.print(bt);  //BK Target Temp
-  Serial.print(",");
+  Serial.print(";rimsRadios,");
   Serial.print(rm); //RIMS PID Mode
-  Serial.print(",");
+  Serial.print(";rimstarget,");
   Serial.print(rt); //RIMS Target Temp
-  Serial.print(",");
-  Serial.print(b1); //BK Heating Element 1 Status
-  Serial.print(",");
-  Serial.print(b2); //BK Heating Element 2 Status
-  Serial.print(",");
-  Serial.print(he); //RIMS Heating Element Status
-  Serial.print(",");
-  Serial.print(p1); //Pump Status
-  Serial.print(",");
-  Serial.print(v1); //Valve 1 Status
-  Serial.print(",");
-  Serial.print(v2); //Valve 2 Status
-  Serial.print(",");
+  Serial.print(";altRadios,");
+  Serial.print(am); //Alt Mode
+  Serial.print(";alttarget,");
+  Serial.print(at); //Alt Target
+  Serial.print(";v1Radios,");
+  Serial.print(v1); //Valve 1
+  Serial.print(";v2Radios,");
+  Serial.print(v2); //Valve 2
+  Serial.print(";v2Radios,");
   Serial.print(v3); //Valve 3 Status
-  Serial.print(",");
+  Serial.print(";v2Radios,");
   Serial.print(v4); //Valve 4 Status
-  Serial.print(",");
+  Serial.print(";v2Radios,");
   Serial.print(v5); //Valve 5 Status
-  Serial.print(",");
+  Serial.print(";v2Radios,");
   Serial.print(v6); //Valve 6 Status
-  Serial.print(",");
+  Serial.print(";p1Radios,");
+  Serial.print(p1); //Pump 1 Status
+  Serial.print(";p2Radios,");
+  Serial.print(p2); //Pump 2 Status
+  */
+  Serial.print(";temp_bk,");
   Serial.print(t1); //Temp Sensor 1
-  Serial.print(",");
+  Serial.print(";temp_rims,");
   Serial.print(t2); //Temp Sensor 2
-  Serial.print(",");
+  Serial.print(";temp_alt1,");
   Serial.println(t3); //Temp Sensor 3
+  Serial.print(";temp_alt2,");
+  Serial.println(t4); //Temp Sensor 4
+  Serial.print(";temp_alt3,");
+  Serial.println(t5); //Temp Sensor 5
 }
 
 void endLine() {
-  if (receiveCount == 14) {
+  if (receiveCount == 15) {
     checkData();
   }
   if (receiveCount > 0) {
 //    Serial.println(receiveCount);
     sendData();
   }
+  checkTemp = true;
   resetData();
   receiveCount = 0;
 };
@@ -187,37 +225,38 @@ void checkData() {
 
 void updateData() {
   //Update the current values
-  stepCount = stepCount + 1;
+  stepCount = rpistep;
   bm = rpibm;
   bt = rpibt;
   rm = rpirm;
   rt = rpirt;
-  b1 = rpib1;
-  b2 = rpib2;
-  he = rpihe;
-  p1 = rpip1;
+  am = rpiam;
+  at = rpiat;
   v1 = rpiv1;
   v2 = rpiv2;
   v3 = rpiv3;
   v4 = rpiv4;
   v5 = rpiv5;
   v6 = rpiv6;
+  p1 = rpip1;
+  p2 = rpip2;
 };
 
 void resetData() {
   //Reset the input data
+  rpistep = 0;
   rpibm = 0; //BK PID Mode
   rpibt = 0;//BK Target Temp
   rpirm = 0; //RIMS PID Mode
   rpirt = 0; //RIMS Target Temp
-  rpib1 = 0; //BK Heating Element 1 Instruction
-  rpib2 = 0; //BK Heating Element 2 Instruction
-  rpihe = 0; //RIMS Heating Element Instruction
-  rpip1 = 0; //Pump Instruction
+  rpiam = 0; //BK Heating Element 1 Instruction
+  rpiat = 0; //BK Heating Element 2 Instruction
   rpiv1 = 0; //Valve 1 Instruction
   rpiv2 = 0; //Valve 2 Instruction
   rpiv3 = 0; //Valve 3 Instruction
   rpiv4 = 0; //Valve 4 Instruction
   rpiv5 = 0; //Valve 5 Instruction
   rpiv6 = 0; //Valve 6 Instruction
+  rpip1 = 0; //Pump Instruction
+  rpip2 = 0; //Pump Instruction
 };

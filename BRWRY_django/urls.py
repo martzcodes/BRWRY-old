@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 
 #    (r'^$', direct_to_template, {'template': 'index.html'}, "home"),
     (r'^$', 'BRWRY_bootstrap.views.BRWRY_index', {}, "home"),
+    (r'^test$', direct_to_template, {'template': 'test.html'}, "test"),
     (r'^about$', direct_to_template, {'template': 'about.html'}, "about"),
     (r'^contact$', direct_to_template, {'template': 'contact.html'}, "contact"),
     (r'^form$', 'BRWRY_bootstrap.views.BRWRY_form'),
