@@ -24,7 +24,8 @@
 #
 #########################################################################################
 
-from configobj import ConfigObj
+import os
+import time
 import simplejson as json
 
-config = ConfigObj('config.cfg')
+instTime = os.stat('instruction.txt').st_mtime

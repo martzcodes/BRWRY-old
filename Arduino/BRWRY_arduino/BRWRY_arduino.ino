@@ -25,11 +25,20 @@
 
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <string.h>
 
 // Data wire is plugged into pin 2 on the Arduino
 #define ONE_WIRE_BUS 2
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(ONE_WIRE_BUS);
+// Pass our oneWire reference to Dallas Temperature. 
+DallasTemperature sensors(&oneWire);
+DeviceAddress t1add = { 0x28, 0x7C, 0x5B, 0xCB, 0x03, 0x00, 0x00, 0x57 };
 
-int receiveCount = 0;
+boolean dataReceived = false;
+int semiCount = 0;
+int semiLoc[20];
+String inMsg = "";
 int stepCount = 0;
 int bm = 0; //BK PID Mode
 int bt = 0;//BK Target Temp
@@ -50,119 +59,188 @@ float t2 = 0.0; //Temp Sensor 2
 float t3 = 0.0; //Temp Sensor 3
 float t4 = 0.0; //Temp Sensor 4
 float t5 = 0.0; //Temp Sensor 5
-int rpistep = 0;
-int rpibm = 0; //BK PID Mode
-int rpibt = 0;//BK Target Temp
-int rpirm = 0; //RIMS PID Mode
-int rpirt = 0; //RIMS Target Temp
-int rpiam = 0; //BK Heating Element 1 Instruction
-int rpiat = 0; //BK Heating Element 2 Instruction
-int rpiv1 = 0; //Valve 1 Instruction
-int rpiv2 = 0; //Valve 2 Instruction
-int rpiv3 = 0; //Valve 3 Instruction
-int rpiv4 = 0; //Valve 4 Instruction
-int rpiv5 = 0; //Valve 5 Instruction
-int rpiv6 = 0; //Valve 6 Instruction
-int rpip1 = 0; //Pump Instruction
-int rpip2 = 0; //Pump Instruction
-boolean checkTemp = true;
 
-// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
-OneWire oneWire(ONE_WIRE_BUS);
-
-// Pass our oneWire reference to Dallas Temperature. 
-DallasTemperature sensors(&oneWire);
-
-DeviceAddress t1add = { 0x28, 0x7C, 0x5B, 0xCB, 0x03, 0x00, 0x00, 0x57 };
-
-void setup () {
-
+void setup() {
   Serial.begin(9600);
-  establishContact();
-  
-  sensors.begin(); // IC Default 9 bit. If you have troubles consider upping it 12. Ups the delay giving the IC more time to process the temperature measurement
-  
-  sensors.setResolution(t1add, 10);
-};
+  sensors.begin();
+  sensors.setResolution(t1add,10);
+  memset(semiLoc,0,sizeof(semiLoc));
+}
 
-void loop () {
-  
-  if (Serial.available() == 0) {
-    endLine();
-  }
-  
-  while (Serial.available() > 0) {
-    
-    checkTemp = false;
-    
-    switch (receiveCount) {
-      case 0:
-      rpistep = Serial.parseInt();
-      break;
-      case 1:
-      rpibm = Serial.parseInt(); //BK PID Mode
-      break;
-      case 2:
-      rpibt = Serial.parseInt();//BK Target Temp
-      break;
-      case 3:
-      rpirm = Serial.parseInt(); //RIMS PID Mode
-      break;
-      case 4:
-      rpirt = Serial.parseInt(); //RIMS Target Temp
-      break;
-      case 5:
-      rpiam = Serial.parseInt(); //Alt Element Mode Instruction
-      break;
-      case 6:
-      rpiat = Serial.parseInt(); //Alt Element Target Temp Instruction
-      break;
-      case 7:
-      rpiv1 = Serial.parseInt(); //Valve 1 Instruction
-      break;
-      case 8:
-      rpiv2 = Serial.parseInt(); //Valve 2 Instruction
-      break;
-      case 9:
-      rpiv3 = Serial.parseInt(); //Valve 3 Instruction
-      break;
-      case 10:
-      rpiv4 = Serial.parseInt(); //Valve 4 Instruction
-      break;
-      case 11:
-      rpiv5 = Serial.parseInt(); //Valve 5 Instruction
-      break;
-      case 12:
-      rpiv6 = Serial.parseInt(); //Valve 6 Instruction
-      break;
-      case 13:
-      rpip1 = Serial.parseInt(); //Pump Instruction
-      break;
-      case 14:
-      rpip2 = Serial.parseInt(); //Pump Instruction
-      break;
+void loop() {
+   if (Serial.available() == 0 && dataReceived) {
+//     Serial.println("Message: " + inMsg);
+     
+//     Serial.println("Message part: " + inMsg.substring(10,20));
+     
+     int x = 0;
+     semiCount = 0;
+     memset(semiLoc,0,sizeof(semiLoc));
+     while(x<inMsg.length()){
+       x = inMsg.indexOf(';',x+1);
+       if (x != -1) {
+         semiLoc[semiCount] = x;
+//         Serial.print("semicolon at: ");
+//         Serial.println(x);
+         semiCount++;
+       } else {
+         semiLoc[semiCount] = inMsg.indexOf('\n');
+//         Serial.println("newline at: " + String(semiLoc[semiCount]));
+         semiCount++;
+       }
+     }
+     int instType = inMsg.substring(0,semiLoc[0]).toInt();
+//     Serial.println("In between: " + printmsg);
+     String printmsg = "";     
+     for (int y=1; y<=semiCount-1; y++) {
+       printmsg = inMsg.substring(semiLoc[y-1]+1,semiLoc[y]);
+       if (printmsg != "") {
+//         Serial.println("In between: " + printmsg);
+         processIncoming(printmsg,instType);
+       }
+     }
+//     Serial.println("There are " + String(semiCount) + " semicolons.");
+//     Serial.println("inMsg length is: " + String(inMsg.length()));
+     if (instType > stepCount) {
+       stepCount = instType;
+     }
+     inMsg = "";
+     dataReceived = false;
+     sendData();
+   }
+   
+   while (Serial.available() > 0) {
+     delay(3);
+     char inChar = Serial.read();
+     inMsg += inChar;
+     dataReceived = true;
+     
+   }
+}
+
+void processIncoming (String procMsg, int instType) {
+  int commaIndex = procMsg.indexOf(',');
+  if (commaIndex == -1) {
+    // Serial.println("No commas");
+  } else {
+    if (procMsg.indexOf(',',commaIndex+1) == -1) {
+      // Serial.println("There are commas");
+      String incAdd = procMsg.substring(0,commaIndex);
+      String incInst = procMsg.substring(commaIndex+1,procMsg.length());
+//      Serial.println("Instruction address: " + incAdd + " | " + incInst);
+      if (instType > stepCount) {
+        updateInstruction(incAdd,incInst);
+      } else {
+        updateHardware(incAdd,incInst);
+      }
+    } else {
+      //too many commas
     }
-    
-    receiveCount = receiveCount + 1;
   }
- 
-  if (checkTemp) {
-      sensors.requestTemperatures(); // Send the command to get temperatures
-      t1 = sensors.getTempF(t1add);
-  }
-};
+}
 
-void establishContact() {
-  while (Serial.available() <= 0) {
-    Serial.println("Hello?");
-    delay(1000);
+void updateInstruction(String incAdd, String incInst) {    
+  if (incAdd == "BM") {
+    bm = incInst.toInt();
   }
-};
+  if (incAdd == "BT") {
+    bt = incInst.toInt();
+  }
+  if (incAdd == "RM") {
+    rm = incInst.toInt();
+  }
+  if (incAdd == "RT") {
+    rt = incInst.toInt();
+  }
+  if (incAdd == "AM") {
+    am = incInst.toInt();
+  }
+  if (incAdd == "AT") {
+    at = incInst.toInt();
+  }
+  if (incAdd == "V1") {
+    v1 = incInst.toInt();
+  }
+  if (incAdd == "V2") {
+    v2 = incInst.toInt();
+  }
+  if (incAdd == "V3") {
+    v3 = incInst.toInt();
+  }
+  if (incAdd == "V4") {
+    v4 = incInst.toInt();
+  }
+  if (incAdd == "V5") {
+    v5 = incInst.toInt();
+  }
+  if (incAdd == "V6") {
+    v6 = incInst.toInt();
+  }
+  if (incAdd == "P1") {
+    p1 = incInst.toInt();
+  }
+  if (incAdd == "P2") {
+    p2 = incInst.toInt();
+  }
+}
+
+void updateHardware(String incAdd, String incInst) {
+  if (incAdd == "T1") {
+    //
+  }
+  if (incAdd == "T2") {
+    //
+  }
+  if (incAdd == "T3") {
+    //
+  }
+  if (incAdd == "T4") {
+    //
+  }
+  if (incAdd == "T5") {
+    //
+  }
+  if (incAdd == "H1") {
+    //
+  }
+  if (incAdd == "H2") {
+    //
+  }
+  if (incAdd == "H3") {
+    //
+  }
+  if (incAdd == "V1") {
+    //
+  }
+  if (incAdd == "V2") {
+    //
+  }
+  if (incAdd == "V3") {
+    //
+  }
+  if (incAdd == "V4") {
+    //
+  }
+  if (incAdd == "V5") {
+    //
+  }
+  if (incAdd == "V6") {
+    //
+  }
+  if (incAdd == "P1") {
+    //
+  }
+  if (incAdd == "P2") {
+    //
+  }
+}
 
 void sendData() {
+  checkTemp();
   Serial.print("step,");
   Serial.print(stepCount); //Step
-/*  Serial.print(";bkRadios,");
+  /*
+  Serial.print(";bkRadios,");
   Serial.print(bm);  //BK PID Mode
   Serial.print(";bktarget,");
   Serial.print(bt);  //BK Target Temp
@@ -178,13 +256,13 @@ void sendData() {
   Serial.print(v1); //Valve 1
   Serial.print(";v2Radios,");
   Serial.print(v2); //Valve 2
-  Serial.print(";v2Radios,");
+  Serial.print(";v3Radios,");
   Serial.print(v3); //Valve 3 Status
-  Serial.print(";v2Radios,");
+  Serial.print(";v4Radios,");
   Serial.print(v4); //Valve 4 Status
-  Serial.print(";v2Radios,");
+  Serial.print(";v5Radios,");
   Serial.print(v5); //Valve 5 Status
-  Serial.print(";v2Radios,");
+  Serial.print(";v6Radios,");
   Serial.print(v6); //Valve 6 Status
   Serial.print(";p1Radios,");
   Serial.print(p1); //Pump 1 Status
@@ -203,60 +281,7 @@ void sendData() {
   Serial.println(t5); //Temp Sensor 5
 }
 
-void endLine() {
-  if (receiveCount == 15) {
-    checkData();
-  }
-  if (receiveCount > 0) {
-//    Serial.println(receiveCount);
-    sendData();
-  }
-  checkTemp = true;
-  resetData();
-  receiveCount = 0;
-};
-
-void checkData() {
-  //Make sure the data looks right
-  
-  //For now just pass it along
-  updateData();
-};
-
-void updateData() {
-  //Update the current values
-  stepCount = rpistep;
-  bm = rpibm;
-  bt = rpibt;
-  rm = rpirm;
-  rt = rpirt;
-  am = rpiam;
-  at = rpiat;
-  v1 = rpiv1;
-  v2 = rpiv2;
-  v3 = rpiv3;
-  v4 = rpiv4;
-  v5 = rpiv5;
-  v6 = rpiv6;
-  p1 = rpip1;
-  p2 = rpip2;
-};
-
-void resetData() {
-  //Reset the input data
-  rpistep = 0;
-  rpibm = 0; //BK PID Mode
-  rpibt = 0;//BK Target Temp
-  rpirm = 0; //RIMS PID Mode
-  rpirt = 0; //RIMS Target Temp
-  rpiam = 0; //BK Heating Element 1 Instruction
-  rpiat = 0; //BK Heating Element 2 Instruction
-  rpiv1 = 0; //Valve 1 Instruction
-  rpiv2 = 0; //Valve 2 Instruction
-  rpiv3 = 0; //Valve 3 Instruction
-  rpiv4 = 0; //Valve 4 Instruction
-  rpiv5 = 0; //Valve 5 Instruction
-  rpiv6 = 0; //Valve 6 Instruction
-  rpip1 = 0; //Pump Instruction
-  rpip2 = 0; //Pump Instruction
-};
+void checkTemp () {
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  t1 = sensors.getTempF(t1add);
+}
