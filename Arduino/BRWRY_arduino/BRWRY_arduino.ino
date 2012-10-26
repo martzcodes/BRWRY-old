@@ -274,9 +274,9 @@ void sendData() {
   Serial.print(";temp_rims,");
   Serial.print(t2); //Temp Sensor 2
   Serial.print(";temp_alt1,");
-  Serial.println(t3); //Temp Sensor 3
+  Serial.print(t3); //Temp Sensor 3
   Serial.print(";temp_alt2,");
-  Serial.println(t4); //Temp Sensor 4
+  Serial.print(t4); //Temp Sensor 4
   Serial.print(";temp_alt3,");
   Serial.println(t5); //Temp Sensor 5
 }

@@ -3,75 +3,116 @@
 {% block content %}
 
     <h1>The BRWRY System:</h1>
-    <div class="well">
-   		<div class="row">
-			<div class="span8">
-				<p>Placeholder Graph:</p>
-				<div id="flot_chart" style="width: 100%; height: 300px;"></div>
-				<p>Time between updates: <input id="updateInterval" type="text" value="" style="text-align: right; width:5em"> milliseconds</p>
-				<script type="text/javascript">
-					$(function () {
-						// we use an inline data source in the example, usually data would
-						// be fetched from a server
-						var data = [], totalPoints = 300;
-						function getRandomData() {
-							if (data.length > 0)
-								data = data.slice(1);
-					
-							// do a random walk
-							while (data.length < totalPoints) {
-								var prev = data.length > 0 ? data[data.length - 1] : 50;
-								var y = prev + Math.random() * 10 - 5;
-								if (y < 0)
-									y = 0;
-								if (y > 100)
-									y = 100;
-								data.push(y);
-							}
-					
-							// zip the generated y values with the x values
-							var res = [];
-							for (var i = 0; i < data.length; ++i)
-								res.push([i, data[i]])
-							return res;
-						}
-					
-						// setup control widget
-						var updateInterval = 30;
-						$("#updateInterval").val(updateInterval).change(function () {
-							var v = $(this).val();
-							if (v && !isNaN(+v)) {
-								updateInterval = +v;
-								if (updateInterval < 1)
-									updateInterval = 1;
-								if (updateInterval > 2000)
-									updateInterval = 2000;
-								$(this).val("" + updateInterval);
-							}
-						});
-					
-						// setup plot
-						var options = {
-							series: { shadowSize: 0 }, // drawing is faster without shadows
-							yaxis: { min: 0, max: 100 },
-							xaxis: { show: false }
-						};
-						var plot = $.plot($("#flot_chart"), [ getRandomData() ], options);
-					
-						function update() {
-							plot.setData([ getRandomData() ]);
-							// since the axes don't change, we don't need to call plot.setupGrid()
-							plot.draw();
-							
-							setTimeout(update, updateInterval);
-						}
-					
-						update();
-					});
-				</script>
-			</div>
+	<div class="row">
+		<div class="span8">
+			<p>Placeholder Graph:</p>
+			<div id="flot_chart" style="width: 100%; height: 300px;"></div>
 		</div>
-    </div>
+		<div class="span4">
+			<p><input id="dataUpdate" class="btn btn-large btn-block btn-primary" type="button" value="Poll"></p>
+			<p><input id="start" class="btn btn-large btn-block btn-primary" type="button" value="Start"/></p>
+			<p><input id="stop" class="btn btn-large btn-block" type="button" value="Stop"/></p>
+		</div>
+	</div>
+	<div class="row">
+		<div id="live_time" class="span2"></div>
+		<div id="temp_bk" class="span2"></div>
+		<div id="temp_rims" class="span2"></div>
+		<div id="temp_alt1" class="span2"></div>
+		<div id="temp_alt2" class="span2"></div>
+		<div id="temp_alt3" class="span2"></div>
+	</div>
+
+<script type="text/javascript">
+$(function () {
+    var options = {
+        lines: { show: true },
+        points: { show: true },
+        xaxis: { tickDecimals: 0, tickSize: 20 }
+    };
+    var data = [];
+    var flot_chart = $("#flot_chart");
+    
+    var startstop = 0;
+    
+    $.plot(flot_chart, data, options);
+
+// setup control widget
+	var updateInterval = 500;
+
+    // fetch one series, adding to what we got
+    var alreadyFetched = {};
+    
+    $(document).ready(function(){
+    	function fetchLiveData() {
+    		function updateTemp(data) {
+    			var subdata = data.split(',');
+    			$('#live_time').text(subdata[0]);
+    			$('#temp_bk').text(subdata[1]);
+    			$('#temp_rims').text(subdata[2]);
+    			$('#temp_alt1').text(subdata[3]);
+    			$('#temp_alt2').text(subdata[4]);
+    			$('#temp_alt3').text(subdata[5]);
+    		}
+    		$.get("{{ STATIC_URL }}data/liveData.dat",updateTemp);
+    		setTimeout(fetchLiveData, 500);
+    	}
+    	setTimeout(fetchLiveData, 500);
+    });
+    
+    $('#start').click(function() {
+		startstop=1;
+    });
+
+    $('#stop').click(function() {
+		startstop=0;
+    });
+
+    
+    // initiate a recurring data update
+    $('#dataUpdate').click(function () {
+        // reset data
+        data = [];
+        alreadyFetched = {};
+        
+        $.plot(flot_chart, data, options);
+
+        var iteration = 0;
+        
+        function fetchData() {
+            //++iteration;
+
+            function onDataReceived(series) {
+                // we get all the data in one go, if we only got partial
+                // data, we could merge it with what we already got
+                data = [ series ];
+                
+                $.plot($("#flot_chart"), data, options);
+            }
+        
+            $.ajax({
+                // usually, we'll just call the same URL, a script
+                // connected to a database, but in this case we only
+                // have static example files so we need to modify the
+                // URL
+                url: "{{ STATIC_URL }}data/testdata.json",
+                type: 'GET',
+                dataType: 'json',
+                success: onDataReceived
+            });
+            
+            if (startstop == 1)
+                setTimeout(fetchData, updateInterval);
+            else {
+                data = [];
+                alreadyFetched = {};
+            }
+        }
+
+        setTimeout(fetchData, updateInterval);
+    });
+});
+</script>
 
 
 {% endblock %}
