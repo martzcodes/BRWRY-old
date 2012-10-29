@@ -1,4 +1,4 @@
-import serial, time, json
+import serial, time, json, os.path
 
 t_b = [0.0,0.0,0.0,0.0]
 t_r = [0.0,0.0,0.0,0.0]
@@ -15,9 +15,17 @@ def jsonoutput(lasttime):
 	t_a2_out = (t_a2[0]+t_a2[1]+t_a2[2]+t_a2[3])/4.0
 	t_a3_out = (t_a3[0]+t_a3[1]+t_a3[2]+t_a3[3])/4.0
 
-	jsontarget = open("static/data/testdata.json")
-	jsonexist = jsontarget.read()
-	jsontarget.close()
+	brwnametarget = open("brwName.txt")
+	brwname = brwnametarget.read()
+	brwnametarget.close()
+	
+	jsonfilename = "static/data/"+brwname+".json"
+	if (os.path.isfile(jsonfilename)):
+		jsontarget = open(jsonfilename)
+		jsonexist = jsontarget.read()
+		jsontarget.close()
+	else:
+		jsonexist = ''
 
 	jsonlines = 0
 	if len(jsonexist) > 0:
@@ -29,14 +37,14 @@ def jsonoutput(lasttime):
 		jsondata[u'data'].pop(0)
 		jsonlines -= 1
 	jsondata[u'data'].append([lasttime, float(t_b_out)])
-	jsontarget = open("static/data/testdata.json","w")
+	jsontarget = open(jsonfilename,"w")
 	jsontarget.truncate()
 	jsondump = json.dumps(jsondata)
 	jsontarget.write(jsondump)
 	jsontarget.close()
 
 ser = serial.Serial('/dev/ttyACM0',9600)
-time.sleep(1)
+time.sleep(4)
 ser.write('0')
 time.sleep(1)
 

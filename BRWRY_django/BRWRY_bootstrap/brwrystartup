@@ -1,0 +1,25 @@
+#! /bin/sh
+
+# Command that always runs?
+
+# start vs stop
+case "$1" in
+  start)
+    echo "Starting BRWRY"
+    # run application you want to start
+    ntpdate -s -b -p 8 -u nist1-dc.WiTime.net
+    python /home/martz/tutorialproject/BRWRY_django/manage.py runserver 0.0.0.0:8080
+    ;;
+  stop)
+    echo "Stopping BRWRY"
+    # kill application you want to stop
+    killall manage.py
+    ;;
+  *)
+    echo "Usage: /etc/init.d/brwrystartup {start|stop}"
+    exit 1
+    ;;
+esac
+
+
+exit 0

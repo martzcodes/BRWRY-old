@@ -28,6 +28,12 @@ import os
 import time
 import simplejson as json
 
+def updateName(brwName):
+    brw = open("brwName.txt","w")
+    brw.truncate()
+    brw.write(brwName)
+    brw.close()
+
 def updateInstruction(insts):
 
     archInst = open("insts.txt")
