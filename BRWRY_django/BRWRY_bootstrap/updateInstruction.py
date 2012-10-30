@@ -28,10 +28,24 @@ import os
 import time
 import simplejson as json
 
+def removeBrw():
+	os.remove("static/data/brwName.txt")
+
 def updateName(brwName):
-    brw = open("brwName.txt","w")
+    brw = open("static/data/brwName.txt","w")
     brw.truncate()
     brw.write(brwName)
+    brw.close()
+
+def updateList():
+    brwList = ""
+    dirList=os.listdir("static/data/")
+    for fname in dirList:
+        if fname.endswith(".json"):
+            brwList += fname + ","
+    brw = open("static/data/brwList.txt","w")
+    brw.truncate()
+    brw.write(brwList)
     brw.close()
 
 def updateInstruction(insts):

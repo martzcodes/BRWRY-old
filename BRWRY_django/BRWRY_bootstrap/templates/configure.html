@@ -4,6 +4,16 @@
 
 {% block content %}
 
+	<div class="row">
+		<div id="live_time" class="span2"></div>
+		<div id="temp_bk" class="span2"></div>
+		<div id="temp_rims" class="span2"></div>
+		<div id="temp_alt1" class="span2"></div>
+		<div id="temp_alt2" class="span2"></div>
+		<div id="temp_alt3" class="span2"></div>
+	</div>
+
+
     <h1>BRWRY Configuration...</h1>
     
     <p>...what equipment do you have?</p>
@@ -419,5 +429,45 @@
     		</div>
     	</div>
     </form>
-    
+<script type="text/javascript">
+$(function () {
+    $(document).ready(function(){
+    	
+		function displayBrwList(data) {
+			var subdata = data.split(',');
+			var historyContainer = $("#history-dropdown");
+			var historyItems = [];
+			for (var i = 0; i < subdata.length; ++i) {
+				historyItems.push('<li><a href="{% url BRWRY_bootstrap.views.BRWRY_history %}?file='+subdata[i]+'">'+subdata[i]+'</a></li>');
+			}
+			historyContainer.append(historyItems.join(''));
+		}
+		function updateBrwList() {
+			$.ajax({
+				url: "?list=1",
+				type: 'GET',
+				dataType: 'json',
+				success: setTimeout($.get("{{ STATIC_URL }}data/brwList.txt",displayBrwList), 500)
+			});
+		}
+    	updateBrwList();
+
+    	function fetchLiveData() {
+    		function updateTemp(data) {
+    			var subdata = data.split(',');
+    			var myDate = new Date(subdata[0]*1000);
+    			$('#live_time').text(myDate.toLocaleTimeString());
+    			$('#temp_bk').text(subdata[1]);
+    			$('#temp_rims').text(subdata[2]);
+    			$('#temp_alt1').text(subdata[3]);
+    			$('#temp_alt2').text(subdata[4]);
+    			$('#temp_alt3').text(subdata[5]);
+    		}
+    		$.get("{{ STATIC_URL }}data/liveData.dat",updateTemp);
+    		setTimeout(fetchLiveData, 500);
+    	}
+    	setTimeout(fetchLiveData, 500);
+    });
+});
+</script>
 {% endblock %}

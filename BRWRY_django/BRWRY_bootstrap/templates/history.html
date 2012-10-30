@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% load bootstrap_toolkit %}
+
+{% block content %}
+
+		<h2 id="brwName">{{ file }}</h2>
+    	<div class="row">
+		<div class="span8">
+			<div id="flot_chart" style="width: 100%; height: 300px;"></div>
+		</div>
+		<div class="span4">
+			<div id="choices">
+				<label class="checkbox"><input type="checkbox" name="t_b" checked="checked" id="t_b_check">
+				Boil Kettle Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_r" checked="checked" id="t_r_check">
+				RIMS Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a1" checked="checked" id="t_a1_check">
+				Alt 1 Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a2" checked="checked" id="t_a2_check">
+				Alt 2 Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a3" checked="checked" id="t_a3_check">
+				Alt 3 Temp</label>
+			</div>
+		</div>
+	</div>
+	<h3>Live Data:</h3>
+	<div class="row">
+		<div id="live_time" class="span2"></div>
+		<div id="temp_bk" class="span2"></div>
+		<div id="temp_rims" class="span2"></div>
+		<div id="temp_alt1" class="span2"></div>
+		<div id="temp_alt2" class="span2"></div>
+		<div id="temp_alt3" class="span2"></div>
+	</div>
+    <div class="row">
+		<div class="span4">
+		<h2>Timeline Key</h2>
+		</div>
+		<div class="span8">
+		<h2>#BRWRY Feed</h2>
+		</div>
+	</div>
+
+<script type="text/javascript">
+$(function () {
+    var options = {
+        lines: { show: true },
+        points: { show: true },
+        legend: {show: true, position: "sw"},
+        xaxis: { mode:"time", timeformat:"%H:%M", minTickSize:[10,"second"], timezone: "browser" }
+    };
+    var data = [];
+    var flot_chart = $("#flot_chart");
+    
+//    $.plot(flot_chart, data, options);
+
+	function fetchData() {
+		function onDataReceived(series) {
+			var j = 1;
+			series["t_b"].color = 1;
+			series["t_r"].color = 2;
+			series["t_a1"].color = 3;
+			series["t_a2"].color = 4;
+			series["t_a3"].color = 5;
+
+			$("#choices").find("input").click(plotAccordingToChoices);
+			
+			function plotAccordingToChoices() {
+				var plotdata = [];
+				var data = [];
+				var datamod = [];
+				$("#choices").find("input:checked").each(function () {
+					var key = $(this).attr("name");
+					if (key && series[key])
+						datamod = series[key]["data"];
+						if (datamod.length > 0) {
+							for (var i = 0; i < datamod.length; ++i) {
+								datamod[i][0] = datamod[i][0]*1000;
+							}
+						}
+						plotdata.push({label:series[key]["label"],data:datamod});
+				});
+				
+				$.plot($("#flot_chart"), plotdata, options);
+			}
+			plotAccordingToChoices();
+		}
+	
+		$.ajax({
+			url: "{{ STATIC_URL }}data/{{ file }}",
+			type: 'GET',
+			dataType: 'json',
+			success: onDataReceived
+		});
+	}
+	fetchData();
+
+    $(document).ready(function(){
+    	
+		function displayBrwList(data) {
+			var subdata = data.split(',');
+			var historyContainer = $("#history-dropdown");
+			var historyItems = [];
+			for (var i = 0; i < subdata.length; ++i) {
+				historyItems.push('<li><a href="{% url BRWRY_bootstrap.views.BRWRY_history %}?file='+subdata[i]+'">'+subdata[i]+'</a></li>');
+			}
+			historyContainer.append(historyItems.join(''));
+		}
+		function updateBrwList() {
+			$.ajax({
+				url: "?list=1",
+				type: 'GET',
+				dataType: 'json',
+				success: setTimeout($.get("{{ STATIC_URL }}data/brwList.txt",displayBrwList), 500)
+			});
+		}
+    	updateBrwList();
+
+    	function fetchLiveData() {
+    		function updateTemp(data) {
+    			var subdata = data.split(',');
+    			var myDate = new Date(subdata[0]*1000);
+    			$('#live_time').text(myDate.toLocaleTimeString());
+    			$('#temp_bk').text(subdata[1]);
+    			$('#temp_rims').text(subdata[2]);
+    			$('#temp_alt1').text(subdata[3]);
+    			$('#temp_alt2').text(subdata[4]);
+    			$('#temp_alt3').text(subdata[5]);
+    		}
+    		$.get("{{ STATIC_URL }}data/liveData.dat",updateTemp);
+    		setTimeout(fetchLiveData, 500);
+    	}
+    	setTimeout(fetchLiveData, 500);
+    });
+});
+</script>
+
+{% endblock %}

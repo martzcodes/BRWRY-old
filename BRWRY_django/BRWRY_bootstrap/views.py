@@ -3,7 +3,7 @@ from django.template.context import RequestContext
 from BRWRY_bootstrap.forms import BRWRYForm, BRWRYTest, HardwareForm, InstructionForm
 from BRWRY_bootstrap.models import Hardware, Instruction
 from BRWRY_django.BRWRY_bootstrap.forms import BRWRYModelForm, BRWRYInlineForm, WidgetsForm
-from BRWRY_django.BRWRY_bootstrap.updateInstruction import updateInstruction, updateName
+from BRWRY_django.BRWRY_bootstrap.updateInstruction import updateInstruction, updateName, removeBrw, updateList
 
 def BRWRY_configure(request):
     hardware = Hardware.objects.get(pk=1)
@@ -27,6 +27,12 @@ def BRWRY_index(request):
     brwName = request.GET.get('name')
     if (brwName != None):
         updateName(brwName)
+    stopBrw = request.GET.get('stop')
+    if (stopBrw != None):
+        removeBrw()
+    listBrw = request.GET.get('list')
+    if (listBrw != None):
+        updateList()
     if request.method == 'POST':
         form = InstructionForm()
         form = InstructionForm(request.POST,instance=instructions)
@@ -41,6 +47,12 @@ def BRWRY_index(request):
         'form': form,
         'hardware': hardware,
         'instructions':instructions,
+    }))
+    
+def BRWRY_history(request):
+    brwName = request.GET.get('file')
+    return render_to_response('history.html', RequestContext(request, {
+        'file': brwName,
     }))
 
 def BRWRY_form_with_template(request):

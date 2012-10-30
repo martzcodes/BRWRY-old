@@ -12,17 +12,18 @@
 	        <p>BRW Name: <input id="brwName" type="text" value="testdata" style="text-align: right; width:5em"></p>
 			<p><input id="dataUpdate" class="btn btn-large btn-block btn-primary" type="button" value="Start"></p>
 			<p><input id="stop" class="btn btn-large btn-block" type="button" value="Stopped"/></p>
-			<p id="choices">Show:
-				<input type="checkbox" name="t_b" checked="checked" id="t_b_check">
-				<label for="t_b_check">Boil Kettle Temp</label>
-				<input type="checkbox" name="t_r" checked="checked" id="t_r_check">
-				<label for="t_r_check">RIMS Temp</label>
-				<input type="checkbox" name="t_a1" checked="checked" id="t_a1_check">
-				<label for="t_a1_check">Alt 1 Temp</label>
-				<input type="checkbox" name="t_a2" checked="checked" id="t_a2_check">
-				<label for="t_a2_check">Alt 2 Temp</label>
-				<input type="checkbox" name="t_a3" checked="checked" id="t_a3_check">
-				<label for="t_a3_check">Alt 3 Temp</label></p>
+			<div id="choices">
+				<label class="checkbox"><input type="checkbox" name="t_b" checked="checked" id="t_b_check">
+				Boil Kettle Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_r" checked="checked" id="t_r_check">
+				RIMS Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a1" checked="checked" id="t_a1_check">
+				Alt 1 Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a2" checked="checked" id="t_a2_check">
+				Alt 2 Temp</label>
+				<label class="checkbox"><input type="checkbox" name="t_a3" checked="checked" id="t_a3_check">
+				Alt 3 Temp</label>
+			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -32,9 +33,6 @@
 		<div id="temp_alt1" class="span2"></div>
 		<div id="temp_alt2" class="span2"></div>
 		<div id="temp_alt3" class="span2"></div>
-	</div>
-	<div class="row">
-		<div id="test_time" class="span6"></div>
 	</div>
     <form class="form-horizontal" method="POST">
     	{% csrf_token %}
@@ -233,7 +231,6 @@ $(function () {
         points: { show: true },
         legend: {show: true, position: "sw"},
         xaxis: { mode:"time", timeformat:"%H:%M", minTickSize:[10,"second"], timezone: "browser" }
-//		xaxis: {mode:"time"}
     };
     var data = [];
     var flot_chart = $("#flot_chart");
@@ -248,13 +245,90 @@ $(function () {
 
     // fetch one series, adding to what we got
     var alreadyFetched = {};
-    
+
+	function fetchData() {
+	
+		if (startstop == 1) {
+
+			function onDataReceived(series) {
+				var j = 1;
+				series["t_b"].color = 1;
+				series["t_r"].color = 2;
+				series["t_a1"].color = 3;
+				series["t_a2"].color = 4;
+				series["t_a3"].color = 5;
+
+				$("#choices").find("input").click(plotAccordingToChoices);
+				
+				function plotAccordingToChoices() {
+					var plotdata = [];
+					var data = [];
+					var datamod = [];
+					$("#choices").find("input:checked").each(function () {
+						var key = $(this).attr("name");
+						if (key && series[key])
+							datamod = series[key]["data"];
+							if (datamod.length > 0) {
+								for (var i = 0; i < datamod.length; ++i) {
+									datamod[i][0] = datamod[i][0]*1000;
+								}
+							}
+							plotdata.push({label:series[key]["label"],data:datamod});
+					});
+					
+					$.plot($("#flot_chart"), plotdata, options);
+				}
+				plotAccordingToChoices();
+			}
+		
+			$.ajax({
+				url: "{{ STATIC_URL }}data/"+brwName+".json",
+				type: 'GET',
+				dataType: 'json',
+				success: onDataReceived
+			});
+		
+			setTimeout(fetchData, 5000);
+		}
+	}
+
     $(document).ready(function(){
+    	
+    	function updateStatus(data) {
+    		startstop = 1;
+			brwName = data;
+			$('#dataUpdate').prop('value', 'Started.');
+			$('#stop').prop('value', 'Stop '+brwName+' !');
+			$('#brwName').prop('value', brwName);
+			fetchData();
+    	}
+    	$.get("{{ STATIC_URL }}data/brwName.txt",updateStatus);
+
+		function displayBrwList(data) {
+			var subdata = data.split(',');
+			var historyContainer = $("#history-dropdown");
+			var historyItems = [];
+			for (var i = 0; i < subdata.length; ++i) {
+				historyItems.push('<li><a href="{% url BRWRY_bootstrap.views.BRWRY_history %}?file='+subdata[i]+'">'+subdata[i]+'</a></li>');
+			}
+			historyContainer.append(historyItems.join(''));
+		}
+		function updateBrwList() {
+			$.ajax({
+				url: "?list=1",
+				type: 'GET',
+				dataType: 'json',
+				success: setTimeout($.get("{{ STATIC_URL }}data/brwList.txt",displayBrwList), 500)
+			});
+		}
+    	updateBrwList();
+
+    	
     	function fetchLiveData() {
     		function updateTemp(data) {
     			var subdata = data.split(',');
     			var myDate = new Date(subdata[0]*1000);
-    			$('#live_time').text(myDate.toLocaleString());
+    			$('#live_time').text(myDate.toLocaleTimeString());
     			$('#temp_bk').text(subdata[1]);
     			$('#temp_rims').text(subdata[2]);
     			$('#temp_alt1').text(subdata[3]);
@@ -278,6 +352,16 @@ $(function () {
 		startstop=0;
 		$('#dataUpdate').prop('value', 'Start ' + brwName);
 		$('#stop').prop('value', 'Stopped.');
+
+        function stopBrw() {
+            $.ajax({
+                url: "?stop=1",
+                type: 'GET',
+                dataType: 'json'
+            });
+        }
+        
+        stopBrw();
     });
 
     
@@ -285,87 +369,11 @@ $(function () {
     $('#dataUpdate').click(function () {
     	startstop=1;
     	brwName = $("#brwName").val();
-//    	brwName.text(brwName.text().replace(' ','_');
 		$('#dataUpdate').prop('value', 'Started.');
 		$('#stop').prop('value', 'Stop '+brwName+' !');
-    	
-    	
-    	
-        // reset data
-        data = [];
-        alreadyFetched = {};
         
         $.plot(flot_chart, data, options);
-
-        var iteration = 0;
-        
-        function fetchData() {
-            //++iteration;
-
-            function onDataReceived(series) {
-                var j = 1;
-                series["t_b"].color = 1;
-                series["t_r"].color = 2;
-                series["t_a1"].color = 3;
-                series["t_a2"].color = 4;
-                series["t_a3"].color = 5;
-/*            	$.each(series,function(key,val) {
-            		val.color = j;
-            		++j;
-            	});
-*/            	
-                $("#choices").find("input").click(plotAccordingToChoices);
                 
-                function plotAccordingToChoices() {
-                	var plotdata = [];
-                	var data = [];
-                	var datamod = [];
-                	$("#choices").find("input:checked").each(function () {
-            			var key = $(this).attr("name");
-			            if (key && series[key])
-							datamod = series[key]["data"];
-//			            	data=series[key];
-//    	    		        data.push(series[key]);
-//    	    		        datamod = data["data"];
-    	    		        if (datamod.length > 0) {
-    	    		        	for (var i = 0; i < datamod.length; ++i) {
-    	    		        		datamod[i][0] = datamod[i][0]*1000;
-    	    		        	}
-    	    		        }
-//    	    		        data["data"] = datamod;
-    	    		        plotdata.push({label:series[key]["label"],data:datamod});
-			        });
-			        
-			        $.plot($("#flot_chart"), plotdata, options);
-                }
-                plotAccordingToChoices();
-/*                
-                if (data.length > 0) {
-                	for (var i = 0; i < data.length; ++i)
-                		data[i][0] = data[i][0]*1000;
-                }
-                
-                series["data"] = data;
-                
-                $.plot($("#flot_chart"), [series], options);
-                */
-            }
-        
-            $.ajax({
-                url: "{{ STATIC_URL }}data/"+brwName+".json",
-                type: 'GET',
-                dataType: 'json',
-                success: onDataReceived
-            });
-            
-            if (startstop == 1)
-                setTimeout(fetchData, 5000);
-            else {
-                data = [];
-                alreadyFetched = {};
-            }
-        }
-        
         function sendBrwName() {
             $.ajax({
                 url: "?name="+brwName,

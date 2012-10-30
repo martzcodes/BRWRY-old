@@ -15,7 +15,7 @@ def jsonoutput(lasttime):
 	t_a2_out = (t_a2[0]+t_a2[1]+t_a2[2]+t_a2[3])/4.0
 	t_a3_out = (t_a3[0]+t_a3[1]+t_a3[2]+t_a3[3])/4.0
 
-	brwnametarget = open("brwName.txt")
+	brwnametarget = open("static/data/brwName.txt")
 	brwname = brwnametarget.read()
 	brwnametarget.close()
 	
@@ -37,6 +37,7 @@ def jsonoutput(lasttime):
 					u't_a1':{u'label':u'Alt 1 Temp',u'data':[]},
 					u't_a2':{u'label':u'Alt 2 Temp',u'data':[]},
 					u't_a3':{u'label':u'Alt 3 Temp',u'data':[]},}
+		t_blines = 0
 	while t_blines >= jsonlinesallowed:
 		jsondata[u't_b'][u'data'].pop(0)
 		jsondata[u't_r'][u'data'].pop(0)
@@ -60,15 +61,12 @@ time.sleep(4)
 ser.write('0')
 time.sleep(1)
 
-print "here"
-
 while ser.inWaiting() >0:
     ser.read()  #flush the old data to make room for new
 
 while 1:
 	ser.write('0')
 	time.sleep(0.5)
-	print "here2"
 	if ser.inWaiting() > 0:
 		line = ser.readline()
 		
@@ -97,8 +95,8 @@ while 1:
 		
 		if temp == 3:
 			#write arrays to json file
-			jsonoutput(int(linedict['time']))
+			if (os.path.isfile("static/data/brwName.txt")):
+				jsonoutput(int(linedict['time']))
 			temp = 0
-
-		temp += 1
-		print "here3"
+		else:
+			temp += 1
