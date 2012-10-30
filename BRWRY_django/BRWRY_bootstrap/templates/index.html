@@ -4,16 +4,25 @@
 
 {% block content %}
 
-    <h1>The BRWRY System:</h1>
     	<div class="row">
 		<div class="span8">
-			<p>Placeholder Graph:</p>
 			<div id="flot_chart" style="width: 100%; height: 300px;"></div>
 		</div>
 		<div class="span4">
 	        <p>BRW Name: <input id="brwName" type="text" value="testdata" style="text-align: right; width:5em"></p>
 			<p><input id="dataUpdate" class="btn btn-large btn-block btn-primary" type="button" value="Start"></p>
 			<p><input id="stop" class="btn btn-large btn-block" type="button" value="Stopped"/></p>
+			<p id="choices">Show:
+				<input type="checkbox" name="t_b" checked="checked" id="t_b_check">
+				<label for="t_b_check">Boil Kettle Temp</label>
+				<input type="checkbox" name="t_r" checked="checked" id="t_r_check">
+				<label for="t_r_check">RIMS Temp</label>
+				<input type="checkbox" name="t_a1" checked="checked" id="t_a1_check">
+				<label for="t_a1_check">Alt 1 Temp</label>
+				<input type="checkbox" name="t_a2" checked="checked" id="t_a2_check">
+				<label for="t_a2_check">Alt 2 Temp</label>
+				<input type="checkbox" name="t_a3" checked="checked" id="t_a3_check">
+				<label for="t_a3_check">Alt 3 Temp</label></p>
 		</div>
 	</div>
 	<div class="row">
@@ -23,6 +32,9 @@
 		<div id="temp_alt1" class="span2"></div>
 		<div id="temp_alt2" class="span2"></div>
 		<div id="temp_alt3" class="span2"></div>
+	</div>
+	<div class="row">
+		<div id="test_time" class="span6"></div>
 	</div>
     <form class="form-horizontal" method="POST">
     	{% csrf_token %}
@@ -219,7 +231,9 @@ $(function () {
     var options = {
         lines: { show: true },
         points: { show: true },
-        xaxis: { tickDecimals: 0, tickSize: 20 }
+        legend: {show: true, position: "sw"},
+        xaxis: { mode:"time", timeformat:"%H:%M", minTickSize:[10,"second"], timezone: "browser" }
+//		xaxis: {mode:"time"}
     };
     var data = [];
     var flot_chart = $("#flot_chart");
@@ -239,7 +253,8 @@ $(function () {
     	function fetchLiveData() {
     		function updateTemp(data) {
     			var subdata = data.split(',');
-    			$('#live_time').text(subdata[0]);
+    			var myDate = new Date(subdata[0]*1000);
+    			$('#live_time').text(myDate.toLocaleString());
     			$('#temp_bk').text(subdata[1]);
     			$('#temp_rims').text(subdata[2]);
     			$('#temp_alt1').text(subdata[3]);
@@ -288,18 +303,55 @@ $(function () {
             //++iteration;
 
             function onDataReceived(series) {
-                // we get all the data in one go, if we only got partial
-                // data, we could merge it with what we already got
-                data = [ series ];
+                var j = 1;
+                series["t_b"].color = 1;
+                series["t_r"].color = 2;
+                series["t_a1"].color = 3;
+                series["t_a2"].color = 4;
+                series["t_a3"].color = 5;
+/*            	$.each(series,function(key,val) {
+            		val.color = j;
+            		++j;
+            	});
+*/            	
+                $("#choices").find("input").click(plotAccordingToChoices);
                 
-                $.plot($("#flot_chart"), data, options);
+                function plotAccordingToChoices() {
+                	var plotdata = [];
+                	var data = [];
+                	var datamod = [];
+                	$("#choices").find("input:checked").each(function () {
+            			var key = $(this).attr("name");
+			            if (key && series[key])
+							datamod = series[key]["data"];
+//			            	data=series[key];
+//    	    		        data.push(series[key]);
+//    	    		        datamod = data["data"];
+    	    		        if (datamod.length > 0) {
+    	    		        	for (var i = 0; i < datamod.length; ++i) {
+    	    		        		datamod[i][0] = datamod[i][0]*1000;
+    	    		        	}
+    	    		        }
+//    	    		        data["data"] = datamod;
+    	    		        plotdata.push({label:series[key]["label"],data:datamod});
+			        });
+			        
+			        $.plot($("#flot_chart"), plotdata, options);
+                }
+                plotAccordingToChoices();
+/*                
+                if (data.length > 0) {
+                	for (var i = 0; i < data.length; ++i)
+                		data[i][0] = data[i][0]*1000;
+                }
+                
+                series["data"] = data;
+                
+                $.plot($("#flot_chart"), [series], options);
+                */
             }
         
             $.ajax({
-                // usually, we'll just call the same URL, a script
-                // connected to a database, but in this case we only
-                // have static example files so we need to modify the
-                // URL
                 url: "{{ STATIC_URL }}data/"+brwName+".json",
                 type: 'GET',
                 dataType: 'json',
@@ -316,10 +368,6 @@ $(function () {
         
         function sendBrwName() {
             $.ajax({
-                // usually, we'll just call the same URL, a script
-                // connected to a database, but in this case we only
-                // have static example files so we need to modify the
-                // URL
                 url: "?name="+brwName,
                 type: 'GET',
                 dataType: 'json',

@@ -27,16 +27,28 @@ def jsonoutput(lasttime):
 	else:
 		jsonexist = ''
 
-	jsonlines = 0
+	t_blines = 0;
 	if len(jsonexist) > 0:
 		jsondata = json.loads(jsonexist)
-		jsonlines = len(jsondata[u'data'])
+		t_blines = len(jsondata[u't_b'][u'data'])
 	else:
-		jsondata = {u'label':u'Boil Kettle Temp',u'data':[]}
-	while jsonlines >= jsonlinesallowed:
-		jsondata[u'data'].pop(0)
-		jsonlines -= 1
-	jsondata[u'data'].append([lasttime, float(t_b_out)])
+		jsondata = {u't_b':{u'label':u'Boil Kettle Temp',u'data':[]},
+					u't_r':{u'label':u'RIMS Temp',u'data':[]},
+					u't_a1':{u'label':u'Alt 1 Temp',u'data':[]},
+					u't_a2':{u'label':u'Alt 2 Temp',u'data':[]},
+					u't_a3':{u'label':u'Alt 3 Temp',u'data':[]},}
+	while t_blines >= jsonlinesallowed:
+		jsondata[u't_b'][u'data'].pop(0)
+		jsondata[u't_r'][u'data'].pop(0)
+		jsondata[u't_a1'][u'data'].pop(0)
+		jsondata[u't_a2'][u'data'].pop(0)
+		jsondata[u't_a3'][u'data'].pop(0)
+		t_blines -= 1
+	jsondata[u't_b'][u'data'].append([lasttime, float(t_b_out)])
+	jsondata[u't_r'][u'data'].append([lasttime, float(t_r_out)])
+	jsondata[u't_a1'][u'data'].append([lasttime, float(t_a1_out)])
+	jsondata[u't_a2'][u'data'].append([lasttime, float(t_a2_out)])
+	jsondata[u't_a3'][u'data'].append([lasttime, float(t_a3_out)])
 	jsontarget = open(jsonfilename,"w")
 	jsontarget.truncate()
 	jsondump = json.dumps(jsondata)
@@ -48,13 +60,15 @@ time.sleep(4)
 ser.write('0')
 time.sleep(1)
 
+print "here"
+
 while ser.inWaiting() >0:
     ser.read()  #flush the old data to make room for new
 
 while 1:
 	ser.write('0')
 	time.sleep(0.5)
-	
+	print "here2"
 	if ser.inWaiting() > 0:
 		line = ser.readline()
 		
@@ -87,3 +101,4 @@ while 1:
 			temp = 0
 
 		temp += 1
+		print "here3"
